@@ -2,7 +2,7 @@ _format_version: "2.1"
 _transform: true
 
 services:
-  - url: "http://orion-ld:1026"
+  - url: "${SERVER_ENDPOINT}:1026"
     name: "context-broker"
     port: 1026
     protocol: "http"
@@ -22,9 +22,9 @@ services:
               - "Authorization"
           ar:
             identifier: "${CLIENT_ID}"
-            host: "http://keyrock:3000"
-            token_endpoint: "http://keyrock:3000/oauth2/token"
-            delegation_endpoint: "http://keyrock:3000/ar/delegation"
+            host: "${SERVER_ENDPOINT}:3000"
+            token_endpoint: "${SERVER_ENDPOINT}:3000/oauth2/token"
+            delegation_endpoint: "${SERVER_ENDPOINT}:3000/ar/delegation"
           satellite:
             identifier: "${I4TRUST_SATELLITE_ID}"
             host: "${I4TRUST_SATELLITE_URL}"

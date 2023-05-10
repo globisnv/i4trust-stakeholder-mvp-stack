@@ -7,7 +7,7 @@ const rootDirectoryPath = path.dirname(path.dirname(__dirname));
 dotenv.config({ path: [rootDirectoryPath, ".env"].join(path.sep) });
 
 async function main() {
-    const exampleConfigFileNames = ["activation-service.yml.example", "kong.yaml.example", "nginx.conf.example"];
+    const exampleConfigFileNames = ["activation-service.yml.example", "kong.yaml.example"];
     const configDirectoryPath = [rootDirectoryPath, "config"].join(path.sep);
 
     for (let exampleConfigFileName of exampleConfigFileNames) {
