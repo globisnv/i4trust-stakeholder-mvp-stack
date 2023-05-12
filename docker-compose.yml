@@ -155,6 +155,7 @@ services:
             - "./config/kong.yaml:/opt/kong/kong.yaml"
         depends_on:
             - "orion-ld"
+            - "mintaka"
 
     activation-service:
         image: "i4trust/activation-service:${ACTIVATION_SERVICE_TAG}"
