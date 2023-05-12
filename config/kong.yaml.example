@@ -42,14 +42,14 @@ services:
               - "authorization"
 
   - url: "${SERVER_ENDPOINT}:8070"
-    name: "temporal"
+    name: "mintaka"
     port: 8070
     protocol: "http"
 
     routes:
-      - name: "temporal"
+      - name: "mintaka"
         paths:
-          - "/temporal"
+          - "/mintaka"
         strip_path: true
 
     plugins:
