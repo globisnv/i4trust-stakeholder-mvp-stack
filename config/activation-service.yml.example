@@ -11,7 +11,7 @@ db:
 
 ar:
   id: "${CLIENT_ID}"
-  token: "http://keyrock:3000/oauth2/token"
-  policy: "http://keyrock:3000/ar/policy"
-  delegation: "http://keyrock:3000/ar/delegation"
+  token: "${SERVER_ENDPOINT}:3000/oauth2/token"
+  policy: "${SERVER_ENDPOINT}:3000/ar/policy"
+  delegation: "${SERVER_ENDPOINT}:3000/ar/delegation"
   rejectUnauthorized: false
