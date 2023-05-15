@@ -42,15 +42,15 @@ services:
               - "authorization"
 
   - url: "${SERVER_ENDPOINT}:8070"
-    name: "ngsi-ld/v1"
+    name: "temporal"
     port: 8070
     protocol: "http"
 
     routes:
-      - name: "ngsi-ld/v1"
+      - name: "temporal"
         paths:
-          - "/ngsi-ld/v1"
-        strip_path: true
+          - "temporal"
+        strip_path: false
 
     plugins:
       - name: "ngsi-ishare-policies"
