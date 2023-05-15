@@ -42,14 +42,14 @@ services:
               - "authorization"
 
   - url: "${SERVER_ENDPOINT}:8070"
-    name: "mintaka"
+    name: "ngsi-ld/v1"
     port: 8070
     protocol: "http"
 
     routes:
-      - name: "mintaka"
+      - name: "ngsi-ld/v1"
         paths:
-          - "/mintaka"
+          - "/ngsi-ld/v1"
         strip_path: true
 
     plugins:
