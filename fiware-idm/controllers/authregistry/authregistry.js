@@ -71,13 +71,15 @@ const _retrieve_policy = async function _retrieve_policy(req, res) {
 
     debug('Requesting available delegation evidences');
 
-    const evidence = await get_delegation_evidence("EU.EORI.AMMTEST");
+    const evidence = await get_delegation_evidence(req.query.accessSubject);
     if (evidence == null) {
       res.status(404).json({
         error: "Didn't find any policy with access subject equal to " + req.query.accessSubject
       });
       return true;
     }
+
+    res.status(200).json({evidence});
 }
 
 const _upsert_policy = async function _upsert_policy(req, res) {
