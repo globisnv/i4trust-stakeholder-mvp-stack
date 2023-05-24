@@ -56,7 +56,7 @@ const _retrieve_policy = async function _retrieve_policy(req, res) {
     const authorized_email = `${config.pr.client_id}@${config.pr.url}`;
     if (!token_info.user.admin && token_info.user.email !== authorized_email) {
       res.status(403).json({
-        error: "You are not authorized to update policies",
+        error: "You are not authorized to retrieve policies",
         details: validate_delegation_evicence.errors
       });
       return true;
@@ -71,7 +71,7 @@ const _retrieve_policy = async function _retrieve_policy(req, res) {
 
     debug('Requesting available delegation evidences');
 
-    const evidence = await get_delegation_evidence(mask.target.accessSubject);
+    const evidence = await get_delegation_evidence(req.query.accessSubject);
     if (evidence == null) {
       res.status(404).end();
       return true;
