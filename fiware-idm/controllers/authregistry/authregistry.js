@@ -114,11 +114,44 @@ const _upsert_policy = async function _upsert_policy(req, res) {
     return true;
   }
 
+  // Tranform current policy
+  const new_evidence = await get_delegation_evidence(evidence.target.accessSubject);
+  if (new_evidence != null) {
+
+    // Loop over both policy sets
+    remove_array = Array(evidence.policySets.length).fill([]);
+    for (let psetIdx = 0; psetIdx < evidence.policySets.length; psetIdx++) {
+        for (let pIdx = 0; pIdx < evidence.policySets[psetIdx].length; pIdx++) {
+            for (let pnewsetIdx = 0; pnewsetIdx < new_evidence.policySets.length; pnewsetIdx++) {
+                for (let pnewIdx = 0; pnewIdx < new_evidence.policySets[pnewsetIdx].length; pnewIdx++) {
+                    const policy = evidence.policySets[psetIdx].policies[pIdx];
+                    const new_policy = new_evidence.policySets[pnewsetIdx].policies[pnewIdx]
+                    if (policy.target.type == new_policy.target.type) {
+                        new_evidence.policySets[pnewsetIdx].policies[pnewIdx] = policy;
+                        remove_array[psetIdx].push(pIdx);
+                    }
+                }
+            }
+        }
+    }
+
+    for (let setIdx = 0; setIdx < remove_array.length; setIdx++) {
+        for (let removeIdx = 0; removeIdx < remove_array[setIdx].length; removeIdx++) {
+            evidence.policySets[setIdx].policies.splice(remove_array[setIdx][removeIdx]- removeIdx, 1);
+        }
+    }
+
+    new_evidence.policySets.push(evidence.policySets);
+  }
+  else {
+    new_evidence = evidence;
+  }
+
   // Create/update sent policy
   models.delegation_evidence.upsert({
-    policy_issuer: evidence.policyIssuer,
-    access_subject: evidence.target.accessSubject,
-    policy: evidence
+    policy_issuer: new_evidence.policyIssuer,
+    access_subject: new_evidence.target.accessSubject,
+    policy: new_evidence
   });
 
   return res.status(200).json({});
