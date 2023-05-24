@@ -135,13 +135,24 @@ const _upsert_policy = async function _upsert_policy(req, res) {
         }
     }
 
+    let realsetIdx = 0;
     for (let setIdx = 0; setIdx < remove_array.length; setIdx++) {
         for (let removeIdx = 0; removeIdx < remove_array[setIdx].length; removeIdx++) {
-            evidence.policySets[setIdx].policies.splice(remove_array[setIdx][removeIdx]- removeIdx, 1);
+            evidence.policySets[realsetIdx].policies.splice(remove_array[setIdx][removeIdx]- removeIdx, 1);
+        }
+
+        setIdx = realsetIdx;
+        if (evidence.policySets[realsetIdx].length == 0) {
+            evidence.policySets.splice(realsetIdx, 1);
+            realsetIdx--;
         }
     }
 
-    new_evidence.policySets.push(evidence.policySets);
+    if (evidence.policySets.length > 0) {
+        evidence.policySets.array.forEach(ps => {
+            new_evidence.policySets.push(ps);
+        });
+    }
   }
   else {
     new_evidence = evidence;
