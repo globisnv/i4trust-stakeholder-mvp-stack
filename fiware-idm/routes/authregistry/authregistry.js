@@ -6,7 +6,7 @@ const authregistry_controller = require('../../controllers/authregistry/authregi
 
 // Routes for the Authorization Registry module
 router.post(
-  '/create-policy',
+  '/upsert-policy',
   authregistry_controller.upsert_policy
 );
 router.post(

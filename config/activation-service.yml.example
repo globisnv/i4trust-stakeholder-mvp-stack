@@ -12,6 +12,6 @@ db:
 ar:
   id: "${CLIENT_ID}"
   token: "${SERVER_ENDPOINT}:3000/oauth2/token"
-  policy: "${SERVER_ENDPOINT}:3000/ar/policy"
+  policy: "${SERVER_ENDPOINT}:3000/ar/upsert-policy"
   delegation: "${SERVER_ENDPOINT}:3000/ar/delegation"
   rejectUnauthorized: false
