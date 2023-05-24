@@ -149,7 +149,7 @@ const _upsert_policy = async function _upsert_policy(req, res) {
     }
 
     if (evidence.policySets.length > 0) {
-        evidence.policySets.array.forEach(ps => {
+        evidence.policySets.forEach(ps => {
             new_evidence.policySets.push(ps);
         });
     }
