@@ -259,7 +259,8 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
           for (let p_id_idx = 0; p_id_idx < p_types[type][t_idx].ids.length; p_id_idx++) {
             const p_id = p_types[type][t_idx].ids[p_id_idx];
             res.status(422).json({
-              error: p,
+              error: 'test',
+              p_obj: p,
               id: p_id
             });
             return true;
