@@ -248,10 +248,11 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
               p_types[p_current_resource.type][p_same_actions_idx].ids.splice(p_ids_idx, 1);
               p_ids_idx--;
             }
+          }
 
-            if (p_types[p_current_resource.type][p_same_actions_idx].ids.length == 0) {
-              //p_types[p_current_resource.type].splice(p_same_actions_idx, 1);
-            }
+          // Remove new policy combination if empty
+          if (p_types[p_current_resource.type][p_same_actions_idx].ids.length == 0) {
+            p_types[p_current_resource.type].splice(p_same_actions_idx, 1);
           }
         }
         else {
