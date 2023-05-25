@@ -254,20 +254,13 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
     for (let type in p_types) {
       if (p_types.hasOwnProperty(type)) {
         for (let t_idx = 0; t_idx < p_types[type].length; t_idx++) {
-          const p_id_first = p_types[type][t_idx].ids[0];
+          const p_id_first = p_types[type][t_idx].idx[0];
           let p = evidence.policySets[0].policies[p_id_first];
           for (let p_id_idx = 0; p_id_idx < p_types[type][t_idx].ids.length; p_id_idx++) {
-            const p_id = p_types[type][t_idx].ids[p_id_idx];
-            res.status(422).json({
-              error: 'test',
-              p_obj: p,
-              id: p_id
-            });
-            return true;
-
-            /*if (!p.target.resource.identifiers.includes(p_id)) {
-              //p.target.resource.identifiers.push(p_id);
-            }*/
+            const p_id = p_types[type][t_idx].idx[p_id_idx];
+            if (!p.target.resource.identifiers.includes(p_id)) {
+              p.target.resource.identifiers.push(p_id);
+            }
           }
           evidence_current.policySets[0].policies.push(p);
         }
