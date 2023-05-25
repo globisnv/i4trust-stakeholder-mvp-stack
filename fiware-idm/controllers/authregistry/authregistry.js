@@ -241,7 +241,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_current_actions) && arrays_are_equal(obj.attrs, p_current_resource.attributes));
         return res.status(200).json({
           idx: p_same_actions_idx,
-          types: p_types
+          types: p_types.length
         });
         if (p_same_actions_idx != -1 && p_current_rules.length == 1) {
           /*for (let p_ids_idx = 0; p_ids_idx < p_types[p_current_resource.type][p_same_actions_idx].ids.length; p_ids_idx++) {
