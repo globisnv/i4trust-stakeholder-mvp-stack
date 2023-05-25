@@ -284,21 +284,15 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       }
    }
   }
+  else {
+    evidence_current = evidence;
+  }
 
-  try {
-    models.delegation_evidence.upsert({
-      policy_issuer: evidence_current.policyIssuer,
-      access_subject: evidence_current.target.accessSubject,
-      policy: evidence_current
-    });
-  }
-  catch (e) {
-    res.status(422).json({
-      error: `Invalid`,
-      details: evidence_current
-    });
-    return true;
-  }
+  models.delegation_evidence.upsert({
+    policy_issuer: evidence_current.policyIssuer,
+    access_subject: evidence_current.target.accessSubject,
+    policy: evidence_current
+  });
 
   return res.status(200).json({});
 };
