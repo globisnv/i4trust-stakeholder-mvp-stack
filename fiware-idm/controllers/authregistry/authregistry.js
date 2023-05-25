@@ -50,6 +50,21 @@ const get_delegation_evidence = async function get_delegation_evidence(subject) 
   return evidence == null ? null : evidence.policy;
 };
 
+const arrays_are_equal = async function arrays_are_equal(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length !== b.length) return false;
+
+  a.sort();
+  b.sort();
+
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+
+  return true;
+}
+
 const _retrieve_policy = async function _retrieve_policy(req, res) {
     const token_info = await authenticate_bearer(req);
 
@@ -191,6 +206,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
   if (evidence_current != null)
   {
     // TODO multiple policy sets
+    // TODO rule exceptions
 
     // Make a list containing all new types (type + id combination)
     let p_types = [];
@@ -203,7 +219,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       }
 
       // Collect type + id combo's per actions and attributes
-      const p_obj_prev_idx = p_types[p_resource.type].findIndex(obj => obj.actions == p_actions && obj.attrs == p_resource.attributes);
+      const p_obj_prev_idx = p_types[p_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_actions) && arrays_are_equal(obj.attrs = p_resource.attributes));
       if (p_obj_prev_idx != -1) {
         p_types[p_resource.type][p_obj_prev_idx].idx.push(p_idx);
         p_types[p_resource.type][p_obj_prev_idx].ids.push(...p_resource.identifiers);
@@ -216,14 +232,15 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
 
     // Remove these types from the currently stored policy definition
     for (let p_current_idx = 0; p_current_idx < evidence_current.policySets[0].policies.length; p_current_idx++) {
+      const p_current_rules = evidence_current.policySets[0].policies[p_current_idx].rules;
       const p_current_resource = evidence_current.policySets[0].policies[p_current_idx].target.resource;
       const p_current_actions = evidence_current.policySets[0].policies[p_current_idx].target.actions;
       
       // Policy has the same type as one of the new policies
       if (p_types.hasOwnProperty(p_current_resource.type)) {
-        // Search whether there is a policy with same actions and same 
-        const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => obj.actions == p_current_actions && obj.attrs == p_current_resource.attributes);
-        if (p_same_actions_idx != -1) {
+        // Search whether there is a policy with same actions and same attributes with no exceptions
+        const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_current_actions) && arrays_are_equal(obj.attrs, p_current_resource.attributes));
+        if (p_same_actions_idx != -1 && p_current_rules.length == 1) {
           for (let p_ids_idx = 0; p_ids_idx < p_types[p_current_resource.type][p_same_actions_idx].ids.length; p_ids_idx++) {
             const p_id = p_types[p_current_resource.type][p_same_actions_idx].ids[p_ids_idx];
             if (!p_current_resource.identifiers.includes(p_id)) {
@@ -256,7 +273,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         for (let t_idx = 0; t_idx < p_types[type].length; t_idx++) {
           const p_id_first = p_types[type][t_idx].idx[0];
           let p = evidence.policySets[0].policies[p_id_first];
-          for (let p_id_idx = 0; p_id_idx < p_types[type][t_idx].ids.length; p_id_idx++) {
+          for (let p_id_idx = 1; p_id_idx < p_types[type][t_idx].idx.length; p_id_idx++) {
             const p_id = p_types[type][t_idx].idx[p_id_idx];
             if (!p.target.resource.identifiers.includes(p_id)) {
               p.target.resource.identifiers.push(p_id);
