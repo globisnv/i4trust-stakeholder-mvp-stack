@@ -202,7 +202,6 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
   }
 
   let evidence_current = await get_delegation_evidence(evidence.target.accessSubject);
-
   if (evidence_current != null)
   {
     // TODO multiple policy sets
@@ -241,14 +240,14 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         // Search whether there is a policy with same actions and same attributes with no exceptions
         const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_current_actions) && arrays_are_equal(obj.attrs, p_current_resource.attributes));
         if (p_same_actions_idx != -1 && p_current_rules.length == 1) {
-          for (let p_ids_idx = 0; p_ids_idx < p_types[p_current_resource.type][p_same_actions_idx].ids.length; p_ids_idx++) {
+          /*for (let p_ids_idx = 0; p_ids_idx < p_types[p_current_resource.type][p_same_actions_idx].ids.length; p_ids_idx++) {
             const p_id = p_types[p_current_resource.type][p_same_actions_idx].ids[p_ids_idx];
             if (!p_current_resource.identifiers.includes(p_id)) {
               p_current_resource.identifiers.push(p_id);
               p_types[p_current_resource.type][p_same_actions_idx].ids.splice(p_ids_idx, 1);
               p_ids_idx--;
             }
-          }
+          }*/
 
           // Remove new policy combination if empty
           if (p_types[p_current_resource.type][p_same_actions_idx].ids.length == 0) {
