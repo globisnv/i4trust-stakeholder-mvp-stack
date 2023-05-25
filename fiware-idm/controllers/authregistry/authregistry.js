@@ -188,84 +188,92 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
 
   const evidence_current = await get_delegation_evidence(evidence.target.accessSubject);
 
-  if (evidence_current != null)
-  {
-    // TODO multiple policy sets
-
-    // Make a list containing all new types (type + id combination)
-    let p_types = [];
-    for (let p_idx = 0; p_idx < evidence.policySets[0].policies.length; p_idx++) {
-      const p_resource = evidence.policySets[0].policies[p_idx].target.resource;
-      const p_actions = evidence.policySets[0].policies[p_idx].actions;
-
-      if (!Object.hasOwn(p_types, p_resource.type)) {
-        p_types[p_resource.type] = [];
-      }
-
-      // Collect type + id combo's per actions and attributes
-      const p_obj_prev_idx = p_types[p_resource.type].findIndex(obj => obj.actions == p_actions && obj.attrs == p_resource.attributes);
-      if (p_obj_prev_idx != -1) {
-        p_types[p_resource.type][p_obj_prev_idx].idx.push(p_idx);
-        p_types[p_resource.type][p_obj_prev_idx].ids.push(...p_resource.identifiers);
-      }
-      else {
-        let p_obj = {idx: [p_idx], ids: [p_resource.identifiers], actions: p_actions, attrs: p_resource.attributes};
-        p_types[p_resource.type].push(p_obj);
-      }
-    }
-
-    // Remove these types from the currently stored policy definition
-    for (let p_current_idx = 0; p_current_idx < evidence_current.policySets[0].policies.length; p_current_idx++) {
-      const p_current_resource = evidence_current.policySets[0].policies[p_current_idx].target.resource;
-      const p_current_actions = evidence_current.policySets[0].policies[p_current_idx].target.actions;
-      
-      // Policy has the same type as one of the new policies
-      if (Object.hasOwn(p_types, p_current_resource.type)) {
-
-        // Search whether there is a policy with same actions and same 
-        const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => obj.actions == p_current_actions && obj.attrs == p_current_resource.attributes);
-        if (p_same_actions_idx != -1) {
-          for (let p_ids_idx = 0; p_ids_idx < p_types[p_current_resource.type][p_same_actions_idx].ids.length; p_ids_idx++) {
-            const p_id = p_types[p_current_resource.type][p_same_actions_idx].ids[p_ids_idx];
-            if (!p_current_resource.identifiers.includes(p_id)) {
-              p_current_resource.identifiers.push(p_id);
-              p_types[p_current_resource.type][p_same_actions_idx].ids.splice(p_ids_idx, 1);
-              p_ids_idx--;
-            }
-          }
+  try {
+    if (evidence_current != null)
+    {
+      // TODO multiple policy sets
+  
+      // Make a list containing all new types (type + id combination)
+      let p_types = [];
+      for (let p_idx = 0; p_idx < evidence.policySets[0].policies.length; p_idx++) {
+        const p_resource = evidence.policySets[0].policies[p_idx].target.resource;
+        const p_actions = evidence.policySets[0].policies[p_idx].actions;
+  
+        if (!Object.hasOwn(p_types, p_resource.type)) {
+          p_types[p_resource.type] = [];
+        }
+  
+        // Collect type + id combo's per actions and attributes
+        const p_obj_prev_idx = p_types[p_resource.type].findIndex(obj => obj.actions == p_actions && obj.attrs == p_resource.attributes);
+        if (p_obj_prev_idx != -1) {
+          p_types[p_resource.type][p_obj_prev_idx].idx.push(p_idx);
+          p_types[p_resource.type][p_obj_prev_idx].ids.push(...p_resource.identifiers);
         }
         else {
-          for (let p_current_ids_idx = 0; p_current_ids_idx < p_current_resource.identifiers; p_current_ids_idx++) {
-            if (p_types[p_current_resource.type].some(obj => obj.ids.includes(p_current_resource.identifiers[p_current_ids_idx]))) {
-              p_current_resource.identifiers.splice(p_current_ids_idx, 1);
-              p_current_ids_idx--;
+          let p_obj = {idx: [p_idx], ids: [p_resource.identifiers], actions: p_actions, attrs: p_resource.attributes};
+          p_types[p_resource.type].push(p_obj);
+        }
+      }
+  
+      // Remove these types from the currently stored policy definition
+      for (let p_current_idx = 0; p_current_idx < evidence_current.policySets[0].policies.length; p_current_idx++) {
+        const p_current_resource = evidence_current.policySets[0].policies[p_current_idx].target.resource;
+        const p_current_actions = evidence_current.policySets[0].policies[p_current_idx].target.actions;
+        
+        // Policy has the same type as one of the new policies
+        if (Object.hasOwn(p_types, p_current_resource.type)) {
+          // Search whether there is a policy with same actions and same 
+          const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => obj.actions == p_current_actions && obj.attrs == p_current_resource.attributes);
+          if (p_same_actions_idx != -1) {
+            for (let p_ids_idx = 0; p_ids_idx < p_types[p_current_resource.type][p_same_actions_idx].ids.length; p_ids_idx++) {
+              const p_id = p_types[p_current_resource.type][p_same_actions_idx].ids[p_ids_idx];
+              if (!p_current_resource.identifiers.includes(p_id)) {
+                p_current_resource.identifiers.push(p_id);
+                p_types[p_current_resource.type][p_same_actions_idx].ids.splice(p_ids_idx, 1);
+                p_ids_idx--;
+              }
             }
           }
-        }
-
-        // Remove policy if empty
-        if (p_current_resource.identifiers.length == 0) {
-          evidence_current.policySets[0].policies.splice(p_current_idx, 1);
-        }
-      }
-    }
-
-    // Add the new policies to the policy definition
-    // TODO exceptions to the rule
-    for (let type in p_types) {
-      if (p_types.hasOwnProperty(type)) {
-        for (let t_idx = 0; t_idx < p_types[type].length; t_idx++) {
-          const p_id = p_types[type][t_idx].ids[0];
-          let p = evidence.policySets[0].policies[p_id];
-          p_types[type][t_idx].ids.forEach(id => {
-            if (!p.target.resource.identifiers.includes(id)) {
-              p.target.resource.identifiers.push(id);
+          else {
+            for (let p_current_ids_idx = 0; p_current_ids_idx < p_current_resource.identifiers; p_current_ids_idx++) {
+              if (p_types[p_current_resource.type].some(obj => obj.ids.includes(p_current_resource.identifiers[p_current_ids_idx]))) {
+                p_current_resource.identifiers.splice(p_current_ids_idx, 1);
+                p_current_ids_idx--;
+              }
             }
-          });
-          evidence_current.policySets[0].policies.push(p);
+          }
+  
+          // Remove policy if empty
+          if (p_current_resource.identifiers.length == 0) {
+            evidence_current.policySets[0].policies.splice(p_current_idx, 1);
+          }
         }
       }
-   }
+  
+      // Add the new policies to the policy definition
+      // TODO exceptions to the rule
+      for (let type in p_types) {
+        if (p_types.hasOwnProperty(type)) {
+          for (let t_idx = 0; t_idx < p_types[type].length; t_idx++) {
+            const p_id = p_types[type][t_idx].ids[0];
+            let p = evidence.policySets[0].policies[p_id];
+            p_types[type][t_idx].ids.forEach(id => {
+              if (!p.target.resource.identifiers.includes(id)) {
+                p.target.resource.identifiers.push(id);
+              }
+            });
+            evidence_current.policySets[0].policies.push(p);
+          }
+        }
+     }
+    }
+  }
+  catch (e) {
+    res.status(422).json({
+      error: `ERROR`,
+      details: e
+    });
+    return true;
   }
 
   models.delegation_evidence.upsert({
