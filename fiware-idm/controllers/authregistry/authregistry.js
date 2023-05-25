@@ -211,6 +211,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       if (to_remove.includes(p_current_type)) {
         evidence_current.policySets[0].policies.splice(p_current_idx, 1);
         p_current_idx--;
+      }
     }
 
     // Add the new policies to the policy definition
