@@ -211,7 +211,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
     let p_types = [];
     for (let p_idx = 0; p_idx < evidence.policySets[0].policies.length; p_idx++) {
       const p_resource = evidence.policySets[0].policies[p_idx].target.resource;
-      const p_actions = evidence.policySets[0].policies[p_idx].actions;
+      const p_actions = evidence.policySets[0].policies[p_idx].target.actions;
 
       if (!p_types.hasOwnProperty(p_resource.type)) {
         p_types[p_resource.type] = [];
@@ -239,19 +239,15 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       if (p_types.hasOwnProperty(p_current_resource.type)) {
         // Search whether there is a policy with same actions and same attributes with no exceptions
         const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_current_actions) && arrays_are_equal(obj.attrs, p_current_resource.attributes));
-        return res.status(200).json({
-          idx: p_same_actions_idx,
-          types: p_types['test']
-        });
         if (p_same_actions_idx != -1 && p_current_rules.length == 1) {
-          /*for (let p_ids_idx = 0; p_ids_idx < p_types[p_current_resource.type][p_same_actions_idx].ids.length; p_ids_idx++) {
+          for (let p_ids_idx = 0; p_ids_idx < p_types[p_current_resource.type][p_same_actions_idx].ids.length; p_ids_idx++) {
             const p_id = p_types[p_current_resource.type][p_same_actions_idx].ids[p_ids_idx];
             if (!p_current_resource.identifiers.includes(p_id)) {
               p_current_resource.identifiers.push(p_id);
               p_types[p_current_resource.type][p_same_actions_idx].ids.splice(p_ids_idx, 1);
               p_ids_idx--;
             }
-          }*/
+          }
 
           // Remove new policy combination if empty
           if (p_types[p_current_resource.type][p_same_actions_idx].ids.length == 0) {
@@ -260,10 +256,10 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         }
         else {
           for (let p_current_ids_idx = 0; p_current_ids_idx < p_current_resource.identifiers; p_current_ids_idx++) {
-            //if (p_types[p_current_resource.type].some(obj => obj.ids.includes(p_current_resource.identifiers[p_current_ids_idx]))) {
+            if (p_types[p_current_resource.type].some(obj => obj.ids.includes(p_current_resource.identifiers[p_current_ids_idx]))) {
               p_current_resource.identifiers.splice(p_current_ids_idx, 1);
               p_current_ids_idx--;
-            //}
+            }
           }
         }
 
