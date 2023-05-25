@@ -201,7 +201,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
     return true;
   }
 
-  const evidence_current = await get_delegation_evidence(evidence.target.accessSubject);
+  let evidence_current = await get_delegation_evidence(evidence.target.accessSubject);
 
   if (evidence_current != null)
   {
@@ -285,15 +285,14 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
    }
   }
   else {
-    //evidence_current = evidence;
-    //return res.status(200).json({evidence_current});
+    evidence_current = evidence;
   }
 
-  /*models.delegation_evidence.upsert({
+  models.delegation_evidence.upsert({
     policy_issuer: evidence_current.policyIssuer,
     access_subject: evidence_current.target.accessSubject,
     policy: evidence_current
-  });*/
+  });
 
   return res.status(200).json({});
 };
