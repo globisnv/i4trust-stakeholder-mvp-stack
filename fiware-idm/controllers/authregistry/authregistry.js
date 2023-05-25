@@ -289,11 +289,11 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
     return res.status(200).json({evidence_current});
   }
 
-  models.delegation_evidence.upsert({
+  /*models.delegation_evidence.upsert({
     policy_issuer: evidence_current.policyIssuer,
     access_subject: evidence_current.target.accessSubject,
     policy: evidence_current
-  });
+  });*/
 
   return res.status(200).json({});
 };
