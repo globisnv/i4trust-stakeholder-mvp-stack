@@ -50,7 +50,7 @@ const get_delegation_evidence = async function get_delegation_evidence(subject) 
   return evidence == null ? null : evidence.policy;
 };
 
-const arrays_are_equal = async function arrays_are_equal(a, b) {
+const arrays_are_equal = function arrays_are_equal(a, b) {
   if (a === b) return true;
   if (a == null || b == null) return false;
   if (a.length !== b.length) return false;
@@ -241,7 +241,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_current_actions) && arrays_are_equal(obj.attrs, p_current_resource.attributes));
         return res.status(200).json({
           idx: p_same_actions_idx,
-          equal: arrays_are_equal(p_types['test'].attrs, p_current_resource.attributes),
+          equal: arrays_are_equal(['attr10'], ['attr8']),
           type: p_types['test'],
           actions: p_current_actions,
           attrs: p_current_resource.attributes
