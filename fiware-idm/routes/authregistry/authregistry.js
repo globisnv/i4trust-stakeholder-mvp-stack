@@ -13,7 +13,7 @@ router.post(
   '/policy',
   authregistry_controller.upsert_policy
 );
-router.post(
+router.patch(
   '/policy',
   authregistry_controller.upsert_merge_policy
 );

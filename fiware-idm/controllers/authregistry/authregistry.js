@@ -145,7 +145,7 @@ const _upsert_policy = async function _upsert_policy(req, res) {
     return true;
   }
 
-  models.delegation_evidence.delete({
+  models.delegation_evidence.upsert({
     policy_issuer: evidence.policyIssuer,
     access_subject: evidence.target.accessSubject,
     policy: evidence
@@ -237,7 +237,7 @@ const _upsert_merge_policy = async function _upsert_policy(req, res) {
     policy: new_evidence
   });*/
 
-  models.delegation_evidence.delete({
+  models.delegation_evidence.upsert({
     policy_issuer: evidence.policyIssuer,
     access_subject: evidence.target.accessSubject,
     policy: evidence
