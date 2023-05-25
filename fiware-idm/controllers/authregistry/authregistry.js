@@ -219,7 +219,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       }
 
       // Collect type + id combo's per actions and attributes
-      const p_obj_prev_idx = p_types[p_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_actions) && arrays_are_equal(obj.attrs = p_resource.attributes));
+      const p_obj_prev_idx = p_types[p_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_actions) && arrays_are_equal(obj.attrs, p_resource.attributes));
       if (p_obj_prev_idx != -1) {
         p_types[p_resource.type][p_obj_prev_idx].idx.push(p_idx);
         p_types[p_resource.type][p_obj_prev_idx].ids.push(...p_resource.identifiers);
