@@ -188,29 +188,32 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
 
   const evidence_current = await get_delegation_evidence(evidence.target.accessSubject);
 
-  // TODO multiple policy sets
-  // Delete old policies of the same resource type
-  let seen_types = [];
-  for (let p_idx = 0; p_idx < evidence.policySets[0].policies.length; p_idx++) {
-    const p_type = evidence.policySets[0].policies[p_idx].target.resource.type;
-    if (seen_types.includes(p_type)) {
-      continue;
+  if (evidence_current != null)
+  {
+    // TODO multiple policy sets
+    // Delete old policies of the same resource type
+    let seen_types = [];
+    for (let p_idx = 0; p_idx < evidence.policySets[0].policies.length; p_idx++) {
+      const p_type = evidence.policySets[0].policies[p_idx].target.resource.type;
+      if (seen_types.includes(p_type)) {
+        continue;
+      }
+
+      for (let p_current_idx = 0; p_current_idx < evidence_current.policySets[0].policies.length; p_current_idx++) {
+          const p_current_type = evidence_current.policySets[0].policies[p_current_idx].target.resource.type;
+          if (p_type == p_current_type) {
+            evidence_current.policySets[0].policies.splice(p_current_idx, 1);
+            p_current_idx--;
+          }
+      }
+
+      seen_types.push(p_type);
     }
 
-    for (let p_current_idx = 0; p_current_idx < evidence_current.policySets[0].policies.length; p_current_idx++) {
-        const p_current_type = evidence_current.policySets[0].policies[p_current_idx].target.resource.type;
-        if (p_type == p_current_type) {
-          evidence_current.policySets[0].policies.splice(p_current_idx, 1);
-          p_current_idx--;
-        }
+    // Add the new policies
+    for (let p_idx = 0; p_idx < evidence.policySets[0].policies.length; p_idx++) {
+      evidence_current.policySets[0].policies.push(evidence.policySets[0].policies[p_idx]);
     }
-
-    seen_types.push(p_type);
-  }
-
-  // Add the new policies
-  for (let p_idx = 0; p_idx < evidence.policySets[0].policies.length; p_idx++) {
-    evidence_current.policySets[0].policies.push(evidence.policySets[0].policies[p_idx]);
   }
 
   // Tranform current policy
@@ -265,9 +268,9 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
   });*/
 
   models.delegation_evidence.upsert({
-    policy_issuer: evidence.policyIssuer,
-    access_subject: evidence.target.accessSubject,
-    policy: evidence
+    policy_issuer: evidence_current.policyIssuer,
+    access_subject: evidence_current.target.accessSubject,
+    policy: evidence_current
   });
 
   return res.status(200).json({});
