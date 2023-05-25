@@ -253,7 +253,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
     // TODO exceptions to the rule
     for (let type in p_types) {
       if (p_types.hasOwnProperty(type)) {
-        for (let t_idx = 0; t_idx < p_types[type].length; t_idx++) {
+        /*for (let t_idx = 0; t_idx < p_types[type].length; t_idx++) {
           const p_id_first = p_types[type][t_idx].ids[0];
           let p = evidence.policySets[0].policies[p_id_first];
           for (let p_id_idx = 0; p_id_idx < p_types[type][t_idx].ids.length; p_id_idx++) {
@@ -263,7 +263,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
             }
           }
           evidence_current.policySets[0].policies.push(p);
-        }
+        }*/
       }
    }
   }
