@@ -250,7 +250,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
             }
 
             if (p_types[p_current_resource.type][p_same_actions_idx].ids.length == 0) {
-              p_types[p_current_resource.type].splice(p_same_actions_idx, 1);
+              //p_types[p_current_resource.type].splice(p_same_actions_idx, 1);
             }
           }
         }
