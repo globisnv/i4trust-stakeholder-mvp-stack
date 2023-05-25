@@ -59,7 +59,7 @@ const arrays_are_equal = function arrays_are_equal(a, b) {
   b.sort();
 
   for (let i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
+    if (a[i] !== b[i]) return false;
   }
 
   return true;
@@ -239,13 +239,6 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       if (p_types.hasOwnProperty(p_current_resource.type)) {
         // Search whether there is a policy with same actions and same attributes with no exceptions
         const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_current_actions) && arrays_are_equal(obj.attrs, p_current_resource.attributes));
-        return res.status(200).json({
-          idx: p_same_actions_idx,
-          equal: arrays_are_equal(['attr10'], ['attr8']),
-          type: p_types['test'],
-          actions: p_current_actions,
-          attrs: p_current_resource.attributes
-        });
         if (p_same_actions_idx != -1 && p_current_rules.length == 1) {
           for (let p_ids_idx = 0; p_ids_idx < p_types[p_current_resource.type][p_same_actions_idx].ids.length; p_ids_idx++) {
             const p_id = p_types[p_current_resource.type][p_same_actions_idx].ids[p_ids_idx];
