@@ -198,7 +198,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       const p_resource = evidence.policySets[0].policies[p_idx].target.resource;
       const p_actions = evidence.policySets[0].policies[p_idx].actions;
 
-      if (!Object.hasOwn(p_types, p_resource.type)) {
+      if (!p_types.hasOwnProperty(p_resource.type)) {
         p_types[p_resource.type] = [];
       }
 
