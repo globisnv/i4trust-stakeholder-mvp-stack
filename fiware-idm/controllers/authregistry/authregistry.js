@@ -103,22 +103,14 @@ const _delete_policy = async function _delete_policy(req, res) {
 
   debug('Deleting available delegation evidences');
 
-  try {
-    await models.delegation_evidence.destroy({
-      where: {
-        policy_issuer: config.pr.client_id,
-        access_subject: req.query.accessSubject
-      }
-    });
-  } catch (error) {
-    res.status(400).json({
-      error: "Error during policy deletion.",
-      details: error
-    });
-    return true;
-  }
+  await models.delegation_evidence.destroy({
+    where: {
+      policy_issuer: config.pr.client_id,
+      access_subject: req.query.accessSubject
+    }
+  });
 
-  return res.status(200).json({evidence});
+  return res.status(200).json({});
 }
 
 const _upsert_policy = async function _upsert_policy(req, res) {
