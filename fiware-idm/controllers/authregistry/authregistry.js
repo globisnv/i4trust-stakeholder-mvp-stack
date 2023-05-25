@@ -51,7 +51,7 @@ const get_delegation_evidence = async function get_delegation_evidence(subject) 
 };
 
 const arrays_are_equal = async function arrays_are_equal(a, b) {
-  if (a === b) return true;
+  //if (a === b) return true;
   if (a == null || b == null) return false;
   if (a.length !== b.length) return false;
 
