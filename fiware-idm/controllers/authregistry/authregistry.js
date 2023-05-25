@@ -439,6 +439,7 @@ const _query_evidences = async function _query_evidences(req, res) {
 
 exports.oauth2 = oauth2;
 exports.get_delegation_evidence = get_delegation_evidence;
+exports.arrays_are_equal = arrays_are_equal;
 exports.upsert_policy = function upsert_policy(req, res, next) {
   debug(' --> upsert policy');
   _upsert_policy(req, res).then(
