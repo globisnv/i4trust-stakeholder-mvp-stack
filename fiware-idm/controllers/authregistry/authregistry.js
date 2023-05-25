@@ -79,16 +79,16 @@ const _retrieve_policy = async function _retrieve_policy(req, res) {
       return true;
     }
 
-    res.status(200).json({evidence});
+    return res.status(200).json({evidence});
 }
 
-const _delete_policy = async function _retrieve_policy(req, res) {
+const _delete_policy = async function _delete_policy(req, res) {
   const token_info = await authenticate_bearer(req);
 
   const authorized_email = `${config.pr.client_id}@${config.pr.url}`;
   if (!token_info.user.admin && token_info.user.email !== authorized_email) {
     res.status(403).json({
-      error: "You are not authorized to retrieve policies",
+      error: "You are not authorized to delete policies",
       details: validate_delegation_evicence.errors
     });
     return true;
@@ -103,14 +103,22 @@ const _delete_policy = async function _retrieve_policy(req, res) {
 
   debug('Deleting available delegation evidences');
 
-  await models.delegation_evidence.destroy({
-    where: {
-      policy_issuer: config.pr.client_id,
-      access_subject: req.query.accessSubject
-    }
-  });
+  try {
+    await models.delegation_evidence.destroy({
+      where: {
+        policy_issuer: config.pr.client_id,
+        access_subject: req.query.accessSubject
+      }
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: "Error during policy deletion.",
+      details: error
+    });
+    return true;
+  }
 
-  res.status(200).json({evidence});
+  return res.status(200).json({evidence});
 }
 
 const _upsert_policy = async function _upsert_policy(req, res) {
@@ -154,7 +162,7 @@ const _upsert_policy = async function _upsert_policy(req, res) {
   return res.status(200).json({});
 };
 
-const _upsert_merge_policy = async function _upsert_policy(req, res) {
+const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
   const token_info = await authenticate_bearer(req);
 
   const authorized_email = `${config.pr.client_id}@${config.pr.url}`;
