@@ -220,7 +220,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       const p_current_actions = evidence_current.policySets[0].policies[p_current_idx].target.actions;
       
       // Policy has the same type as one of the new policies
-      if (Object.hasOwn(p_types, p_current_resource.type)) {
+      if (p_types.hasOwnProperty(p_current_resource.type)) {
         // Search whether there is a policy with same actions and same 
         const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => obj.actions == p_current_actions && obj.attrs == p_current_resource.attributes);
         if (p_same_actions_idx != -1) {
