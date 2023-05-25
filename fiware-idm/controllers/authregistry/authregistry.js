@@ -257,7 +257,9 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
           const p_id_first = p_types[type][t_idx].ids[0];
           let p = evidence.policySets[0].policies[p_id_first];
           for (let p_id_idx = 0; p_id_idx < p_types[type][t_idx].ids.length; p_id_idx++) {
-            const p_id = p_types[type][t_idx].ids[p_id_idx];
+            let p_id = p_types[type][t_idx].ids[p_id_idx];
+
+
             if (!p.target.resource.identifiers.includes(p_id)) {
               //p.target.resource.identifiers.push(p_id);
             }
