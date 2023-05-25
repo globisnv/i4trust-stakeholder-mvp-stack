@@ -286,6 +286,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
   }
   else {
     evidence_current = evidence;
+    return res.status(200).json({evidence_current});
   }
 
   models.delegation_evidence.upsert({
