@@ -225,7 +225,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         p_types[p_resource.type][p_obj_prev_idx].ids.push(...p_resource.identifiers);
       }
       else {
-        let p_obj = {idx: [p_idx], ids: [p_resource.identifiers], actions: p_actions, attrs: p_resource.attributes};
+        let p_obj = {idx: [p_idx], ids: p_resource.identifiers, actions: p_actions, attrs: p_resource.attributes};
         p_types[p_resource.type].push(p_obj);
       }
     }
