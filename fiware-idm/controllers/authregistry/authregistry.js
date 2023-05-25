@@ -58,7 +58,7 @@ const arrays_are_equal = async function arrays_are_equal(a, b) {
   a.sort();
   b.sort();
 
-  for (var i = 0; i < a.length; ++i) {
+  for (let i = 0; i < a.length; i++) {
     if (a[i] != b[i]) return false;
   }
 
@@ -241,6 +241,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_current_actions) && arrays_are_equal(obj.attrs, p_current_resource.attributes));
         return res.status(200).json({
           idx: p_same_actions_idx,
+          equal: arrays_are_equal(p_types['test'].attrs, p_current_resource.attributes),
           type: p_types['test'],
           actions: p_current_actions,
           attrs: p_current_resource.attributes
