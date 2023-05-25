@@ -215,7 +215,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
     }
 
     // Remove these types from the currently stored policy definition
-    /*for (let p_current_idx = 0; p_current_idx < evidence_current.policySets[0].policies.length; p_current_idx++) {
+    for (let p_current_idx = 0; p_current_idx < evidence_current.policySets[0].policies.length; p_current_idx++) {
       const p_current_resource = evidence_current.policySets[0].policies[p_current_idx].target.resource;
       const p_current_actions = evidence_current.policySets[0].policies[p_current_idx].target.actions;
       
@@ -247,7 +247,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
           evidence_current.policySets[0].policies.splice(p_current_idx, 1);
         }
       }
-    }*/
+    }
 
     // Add the new policies to the policy definition
     // TODO exceptions to the rule
