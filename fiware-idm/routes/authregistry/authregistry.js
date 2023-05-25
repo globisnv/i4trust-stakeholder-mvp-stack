@@ -6,12 +6,20 @@ const authregistry_controller = require('../../controllers/authregistry/authregi
 
 // Routes for the Authorization Registry module
 router.get(
-  '/show-policy',
+  '/policy',
   authregistry_controller.retrieve_policy
 );
 router.post(
-  '/upsert-policy',
+  '/policy',
   authregistry_controller.upsert_policy
+);
+router.post(
+  '/policy',
+  authregistry_controller.upsert_merge_policy
+);
+router.delete(
+  '/policy',
+  authregistry_controller.delete_policy
 );
 router.post(
   '/delegation',

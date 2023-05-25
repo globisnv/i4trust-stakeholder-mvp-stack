@@ -82,6 +82,37 @@ const _retrieve_policy = async function _retrieve_policy(req, res) {
     res.status(200).json({evidence});
 }
 
+const _delete_policy = async function _retrieve_policy(req, res) {
+  const token_info = await authenticate_bearer(req);
+
+  const authorized_email = `${config.pr.client_id}@${config.pr.url}`;
+  if (!token_info.user.admin && token_info.user.email !== authorized_email) {
+    res.status(403).json({
+      error: "You are not authorized to retrieve policies",
+      details: validate_delegation_evicence.errors
+    });
+    return true;
+  }
+
+  if (req.query.accessSubject == null) {
+      res.status(400).json({
+        error: "Missing 'accessSubject' query parameter"
+      });
+      return true;
+  }
+
+  debug('Deleting available delegation evidences');
+
+  await models.delegation_evidence.destroy({
+    where: {
+      policy_issuer: config.pr.client_id,
+      access_subject: req.query.accessSubject
+    }
+  });
+
+  res.status(200).json({evidence});
+}
+
 const _upsert_policy = async function _upsert_policy(req, res) {
   const token_info = await authenticate_bearer(req);
 
@@ -114,8 +145,49 @@ const _upsert_policy = async function _upsert_policy(req, res) {
     return true;
   }
 
+  models.delegation_evidence.delete({
+    policy_issuer: evidence.policyIssuer,
+    access_subject: evidence.target.accessSubject,
+    policy: evidence
+  });
+
+  return res.status(200).json({});
+};
+
+const _upsert_merge_policy = async function _upsert_policy(req, res) {
+  const token_info = await authenticate_bearer(req);
+
+  const authorized_email = `${config.pr.client_id}@${config.pr.url}`;
+  if (!token_info.user.admin && token_info.user.email !== authorized_email) {
+    res.status(403).json({
+      error: "You are not authorized to update policies",
+      details: validate_delegation_evicence.errors
+    });
+    return true;
+  }
+
+  debug(`User ${token_info.user.username}`);
+  if (!validate_delegation_evicence(req.body)) {
+    debug(validate_delegation_evicence.errors);
+    res.status(400).json({
+      error: "Invalid policy document",
+      details: validate_delegation_evicence.errors
+    });
+    return true;
+  }
+
+  const evidence = req.body.delegationEvidence;
+
+  // Check policyIssuer
+  if (evidence.policyIssuer !== config.pr.client_id) {
+    res.status(422).json({
+      error: `Invalid value for policyIssuer: ${evidence.policyIssuer}`
+    });
+    return true;
+  }
+
   // Tranform current policy
-  const new_evidence = await get_delegation_evidence(evidence.target.accessSubject);
+  /*const new_evidence = await get_delegation_evidence(evidence.target.accessSubject);
   if (new_evidence != null) {
 
     // Loop over both policy sets
@@ -163,6 +235,12 @@ const _upsert_policy = async function _upsert_policy(req, res) {
     policy_issuer: new_evidence.policyIssuer,
     access_subject: new_evidence.target.accessSubject,
     policy: new_evidence
+  });*/
+
+  models.delegation_evidence.delete({
+    policy_issuer: evidence.policyIssuer,
+    access_subject: evidence.target.accessSubject,
+    policy: evidence
   });
 
   return res.status(200).json({});
@@ -331,37 +409,101 @@ exports.upsert_policy = function upsert_policy(req, res, next) {
   );
 };
 
-exports.retrieve_policy = function retrieve_policy(req, res, next) {
-    debug(' --> retrieve policy');
-    _retrieve_policy(req, res).then(
-      (skip) => {
-        if (!skip) {
-          next();
-        }
-      },
-      (err) => {
-        if (err instanceof oauth2_server.OAuthError) {
-          debug('Error ', err.message);
-          if (err.details) {
-            debug('Due: ', err.details);
-          }
-          res.status(err.status = err.code);
-  
-          res.locals.error = err;
-          res.render('errors/oauth', {
-            query: {},
-            application: req.application
-          });
-        } else {
-          res.status(500).json({
-            message: err,
-            code: 500,
-            title: 'Internal Server Error'
-          });
-        }
+exports.upsert_merge_policy = function upsert_merge_policy(req, res, next) {
+  debug(' --> upsert merge policy');
+  _upsert_merge_policy(req, res).then(
+    (skip) => {
+      if (!skip) {
+        next();
       }
-    );
-  };
+    },
+    (err) => {
+      if (err instanceof oauth2_server.OAuthError) {
+        debug('Error ', err.message);
+        if (err.details) {
+          debug('Due: ', err.details);
+        }
+        res.status(err.status = err.code);
+
+        res.locals.error = err;
+        res.render('errors/oauth', {
+          query: {},
+          application: req.application
+        });
+      } else {
+        res.status(500).json({
+          message: err,
+          code: 500,
+          title: 'Internal Server Error'
+        });
+      }
+    }
+  );
+};
+
+exports.delete_policy = function delete_policy(req, res, next) {
+  debug(' --> delete policy');
+  _delete_policy(req, res).then(
+    (skip) => {
+      if (!skip) {
+        next();
+      }
+    },
+    (err) => {
+      if (err instanceof oauth2_server.OAuthError) {
+        debug('Error ', err.message);
+        if (err.details) {
+          debug('Due: ', err.details);
+        }
+        res.status(err.status = err.code);
+
+        res.locals.error = err;
+        res.render('errors/oauth', {
+          query: {},
+          application: req.application
+        });
+      } else {
+        res.status(500).json({
+          message: err,
+          code: 500,
+          title: 'Internal Server Error'
+        });
+      }
+    }
+  );
+};
+
+exports.retrieve_policy = function retrieve_policy(req, res, next) {
+  debug(' --> retrieve policy');
+  _retrieve_policy(req, res).then(
+    (skip) => {
+      if (!skip) {
+        next();
+      }
+    },
+    (err) => {
+      if (err instanceof oauth2_server.OAuthError) {
+        debug('Error ', err.message);
+        if (err.details) {
+          debug('Due: ', err.details);
+        }
+        res.status(err.status = err.code);
+
+        res.locals.error = err;
+        res.render('errors/oauth', {
+          query: {},
+          application: req.application
+        });
+      } else {
+        res.status(500).json({
+          message: err,
+          code: 500,
+          title: 'Internal Server Error'
+        });
+      }
+    }
+  );
+};
 
 exports.query_evidences = function query_evidences(req, res, next) {
   debug(' --> delegate');
