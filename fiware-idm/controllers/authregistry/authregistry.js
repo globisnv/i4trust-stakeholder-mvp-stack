@@ -241,9 +241,9 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
           if (arrays_are_equal(p_obj.actions, p_current_actions) && arrays_are_equal(p_obj.attrs, p_current_resource.attributes) && p_current_rules.length == 1) {
             for (let p_ids_idx = 0; p_ids_idx < p_obj.ids.length; p_ids_idx++) {
               const p_id = p_obj.ids[p_ids_idx];
+              p_obj.selected[p_ids_idx] = true;
               if (!p_current_resource.identifiers.includes(p_id)) {
                 p_current_resource.identifiers.push(p_id);
-                p_obj.selected[p_ids_idx] = true;
               }
             }
   
