@@ -222,8 +222,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       if (p_obj_prev_idx != -1) {
         p_types[p_resource.type][p_obj_prev_idx].idx.push(p_idx);
         p_types[p_resource.type][p_obj_prev_idx].ids.push(...p_resource.identifiers);
-      }
-      else {
+      } else {
         let p_obj = {idx: [p_idx], ids: p_resource.identifiers, selected: new Array(p_resource.identifiers.length).fill(false), actions: p_actions, attrs: p_resource.attributes};
         p_types[p_resource.type].push(p_obj);
       }
@@ -246,7 +245,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
             const p_id = p_obj.ids[p_ids_idx];
             if (!p_current_resource.identifiers.includes(p_id)) {
               p_current_resource.identifiers.push(p_id);
-              p_types[p_current_resource.type][p_same_actions_idx].selected[p_ids_idx] = true;
+              p_obj.selected[p_ids_idx] = true;
             }
           }
 
@@ -254,8 +253,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
           if (p_obj.ids.length == 0) {
             p_types[p_current_resource.type].splice(p_same_actions_idx, 1);
           }
-        }
-        else {
+        } else {
           for (let p_current_ids_idx = 0; p_current_ids_idx < p_current_resource.identifiers; p_current_ids_idx++) {
             if (p_types[p_current_resource.type].some(obj => obj.ids.includes(p_current_resource.identifiers[p_current_ids_idx]))) {
               p_current_resource.identifiers.splice(p_current_ids_idx, 1);
@@ -271,6 +269,8 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       }
     }
 
+    return res.status(200).json({types: p_types['test'][0]});
+
     // Add the new policies to the policy definition
     // TODO exceptions to the rule
     for (let type in p_types) {
@@ -281,8 +281,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
             if (!p_types[type][t_idx].selected[p_id_idx]) {
               if (!p) {
                 p = evidence.policySets[0].policies[p_id_first]
-              }
-              else {
+              } else {
                 const p_id = p_types[type][t_idx].ids[p_id_idx];
                 if (!p.target.resource.identifiers.includes(p_id)) {
                   p.target.resource.identifiers.push(p_id);
@@ -294,8 +293,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         }
       }
    }
-  }
-  else {
+  } else {
     evidence_current = evidence;
   }
 
