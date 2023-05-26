@@ -236,8 +236,9 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       
       // Policy has the same type as one of the new policies
       if (p_types.hasOwnProperty(p_current_resource.type)) {
-        for (let type_idx = 0; type_idx < p_types[type].length; type_idx++) {
-          if (arrays_are_equal(p_types[type][type_idx].actions, p_current_actions) && arrays_are_equal(p_types[type][type_idx].attrs, p_current_resource.attributes) && p_current_rules.length == 1) {
+        for (let type_idx = 0; type_idx < p_types[p_current_resource.type].length; type_idx++) {
+          const type_obj = p_types[p_current_resource.type][type_idx];
+          if (arrays_are_equal(type_obj.actions, p_current_actions) && arrays_are_equal(type_obj.attrs, p_current_resource.attributes) && p_current_rules.length == 1) {
             const p_obj = p_types[p_current_resource.type][p_same_actions_idx];
   
             for (let p_ids_idx = 0; p_ids_idx < p_obj.ids.length; p_ids_idx++) {
