@@ -241,12 +241,12 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_current_actions) && arrays_are_equal(obj.attrs, p_current_resource.attributes));
         if (p_same_actions_idx != -1 && p_current_rules.length == 1) {
           const p_obj = p_types[p_current_resource.type][p_same_actions_idx];
-          
+
           for (let p_ids_idx = 0; p_ids_idx < p_obj.ids.length; p_ids_idx++) {
             const p_id = p_obj.ids[p_ids_idx];
             if (!p_current_resource.identifiers.includes(p_id)) {
               p_current_resource.identifiers.push(p_id);
-              p_obj.selected[p_ids_idx] = true;
+              p_types[p_current_resource.type][p_same_actions_idx].selected[p_ids_idx] = true;
             }
           }
 
@@ -276,12 +276,18 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
     for (let type in p_types) {
       if (p_types.hasOwnProperty(type)) {
         for (let t_idx = 0; t_idx < p_types[type].length; t_idx++) {
-          const p_id_first = p_types[type][t_idx].idx[0];
-          let p = evidence.policySets[0].policies[p_id_first];
-          for (let p_id_idx = 1; p_id_idx < p_types[type][t_idx].ids.length; p_id_idx++) {
-            const p_id = p_types[type][t_idx].ids[p_id_idx];
-            if (!p.target.resource.identifiers.includes(p_id)) {
-              p.target.resource.identifiers.push(p_id);
+          let p = null;
+          for (let p_id_idx = 0; p_id_idx < p_types[type][t_idx].ids.length; p_id_idx++) {
+            if (!p_types[type][t_idx].selected[p_id_idx]) {
+              if (!p) {
+                p = evidence.policySets[0].policies[p_id_first]
+              }
+              else {
+                const p_id = p_types[type][t_idx].ids[p_id_idx];
+                if (!p.target.resource.identifiers.includes(p_id)) {
+                  p.target.resource.identifiers.push(p_id);
+                }
+              }
             }
           }
           evidence_current.policySets[0].policies.push(p);
