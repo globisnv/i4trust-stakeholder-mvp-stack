@@ -224,7 +224,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         p_types[p_resource.type][p_obj_prev_idx].ids.push(...p_resource.identifiers);
       }
       else {
-        let p_obj = {idx: [p_idx], ids: p_resource.identifiers, actions: p_actions, attrs: p_resource.attributes};
+        let p_obj = {idx: [p_idx], ids: p_resource.identifiers, selected: new Array(p_resource.identifiers.length).fill(false), actions: p_actions, attrs: p_resource.attributes};
         p_types[p_resource.type].push(p_obj);
       }
     }
@@ -240,17 +240,18 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
         // Search whether there is a policy with same actions and same attributes with no exceptions
         const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_current_actions) && arrays_are_equal(obj.attrs, p_current_resource.attributes));
         if (p_same_actions_idx != -1 && p_current_rules.length == 1) {
-          for (let p_ids_idx = 0; p_ids_idx < p_types[p_current_resource.type][p_same_actions_idx].ids.length; p_ids_idx++) {
-            const p_id = p_types[p_current_resource.type][p_same_actions_idx].ids[p_ids_idx];
+          const p_obj = p_types[p_current_resource.type][p_same_actions_idx];
+          
+          for (let p_ids_idx = 0; p_ids_idx < p_obj.ids.length; p_ids_idx++) {
+            const p_id = p_obj.ids[p_ids_idx];
             if (!p_current_resource.identifiers.includes(p_id)) {
               p_current_resource.identifiers.push(p_id);
-              p_types[p_current_resource.type][p_same_actions_idx].ids.splice(p_ids_idx, 1);
-              p_ids_idx--;
+              p_obj.selected[p_ids_idx] = true;
             }
           }
 
           // Remove new policy combination if empty
-          if (p_types[p_current_resource.type][p_same_actions_idx].ids.length == 0) {
+          if (p_obj.ids.length == 0) {
             p_types[p_current_resource.type].splice(p_same_actions_idx, 1);
           }
         }
