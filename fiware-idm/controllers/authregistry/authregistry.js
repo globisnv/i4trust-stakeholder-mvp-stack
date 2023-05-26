@@ -263,6 +263,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
           // Remove policy if empty
           if (p_current_resource.identifiers.length == 0) {
             evidence_current.policySets[0].policies.splice(p_current_idx, 1);
+            p_current_idx--;
             break;
           }
         }
