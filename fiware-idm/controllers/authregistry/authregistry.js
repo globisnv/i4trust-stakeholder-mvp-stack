@@ -236,35 +236,36 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       
       // Policy has the same type as one of the new policies
       if (p_types.hasOwnProperty(p_current_resource.type)) {
-        // Search whether there is a policy with same actions and same attributes with no exceptions
-        const p_same_actions_idx = p_types[p_current_resource.type].findIndex(obj => arrays_are_equal(obj.actions, p_current_actions) && arrays_are_equal(obj.attrs, p_current_resource.attributes));
-        if (p_same_actions_idx != -1 && p_current_rules.length == 1) {
-          const p_obj = p_types[p_current_resource.type][p_same_actions_idx];
-
-          for (let p_ids_idx = 0; p_ids_idx < p_obj.ids.length; p_ids_idx++) {
-            const p_id = p_obj.ids[p_ids_idx];
-            if (!p_current_resource.identifiers.includes(p_id)) {
-              p_current_resource.identifiers.push(p_id);
-              p_obj.selected[p_ids_idx] = true;
+        for (let type_idx = 0; type_idx < p_types[type].length; type_idx++) {
+          if (arrays_are_equal(p_types[type][type_idx].actions, p_current_actions) && arrays_are_equal(p_types[type][type_idx].attrs, p_current_resource.attributes) && p_current_rules.length == 1) {
+            const p_obj = p_types[p_current_resource.type][p_same_actions_idx];
+  
+            for (let p_ids_idx = 0; p_ids_idx < p_obj.ids.length; p_ids_idx++) {
+              const p_id = p_obj.ids[p_ids_idx];
+              if (!p_current_resource.identifiers.includes(p_id)) {
+                p_current_resource.identifiers.push(p_id);
+                p_obj.selected[p_ids_idx] = true;
+              }
+            }
+  
+            // Remove new policy combination if empty
+            if (p_obj.ids.length == 0) {
+              p_types[p_current_resource.type].splice(p_same_actions_idx, 1);
+            }
+          } else {
+            for (let p_current_ids_idx = 0; p_current_ids_idx < p_current_resource.identifiers.length; p_current_ids_idx++) {
+              if (p_types[p_current_resource.type].some(obj => obj.ids.includes(p_current_resource.identifiers[p_current_ids_idx]))) {
+                p_current_resource.identifiers.splice(p_current_ids_idx, 1);
+                p_current_ids_idx--;
+              }
             }
           }
 
-          // Remove new policy combination if empty
-          if (p_obj.ids.length == 0) {
-            p_types[p_current_resource.type].splice(p_same_actions_idx, 1);
+          // Remove policy if empty
+          if (p_current_resource.identifiers.length == 0) {
+            evidence_current.policySets[0].policies.splice(p_current_idx, 1);
+            break;
           }
-        } else {
-          for (let p_current_ids_idx = 0; p_current_ids_idx < p_current_resource.identifiers.length; p_current_ids_idx++) {
-            if (p_types[p_current_resource.type].some(obj => obj.ids.includes(p_current_resource.identifiers[p_current_ids_idx]))) {
-              p_current_resource.identifiers.splice(p_current_ids_idx, 1);
-              p_current_ids_idx--;
-            }
-          }
-        }
-
-        // Remove policy if empty
-        if (p_current_resource.identifiers.length == 0) {
-          evidence_current.policySets[0].policies.splice(p_current_idx, 1);
         }
       }
     }
