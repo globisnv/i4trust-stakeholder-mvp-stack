@@ -269,8 +269,6 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
       }
     }
 
-    return res.status(200).json({types: p_types['test'][0]});
-
     // Add the new policies to the policy definition
     // TODO exceptions to the rule
     for (let type in p_types) {
@@ -280,7 +278,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
           for (let p_id_idx = 0; p_id_idx < p_types[type][t_idx].ids.length; p_id_idx++) {
             if (!p_types[type][t_idx].selected[p_id_idx]) {
               if (!p) {
-                p = evidence.policySets[0].policies[p_id_first]
+                p = evidence.policySets[0].policies[p_id_idx];
               } else {
                 const p_id = p_types[type][t_idx].ids[p_id_idx];
                 if (!p.target.resource.identifiers.includes(p_id)) {
@@ -289,7 +287,10 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
               }
             }
           }
-          evidence_current.policySets[0].policies.push(p);
+
+          if (p) {
+            evidence_current.policySets[0].policies.push(p);
+          }
         }
       }
    }
