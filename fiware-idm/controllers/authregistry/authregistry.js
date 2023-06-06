@@ -248,7 +248,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
             }
           } else {
             for (let p_current_ids_idx = 0; p_current_ids_idx < p_current_resource.identifiers.length; p_current_ids_idx++) {
-              if (p_types[p_current_resource.type].some(obj => obj.ids.includes(p_current_resource.identifiers[p_current_ids_idx]))) {
+              if (p_obj.ids.includes(p_current_resource.identifiers[p_current_ids_idx])) {
                 p_current_resource.identifiers.splice(p_current_ids_idx, 1);
                 p_current_ids_idx--;
               }
