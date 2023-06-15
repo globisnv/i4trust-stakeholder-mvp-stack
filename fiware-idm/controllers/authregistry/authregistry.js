@@ -206,6 +206,7 @@ const _upsert_merge_policy = async function _upsert_merge_policy(req, res) {
   {
     // TODO multiple policy sets
     // TODO rule exceptions
+    // TODO permit/deny in effect is now always assumed to be permit
 
     // Make a list containing all new types (type + id combination)
     let p_types = [];

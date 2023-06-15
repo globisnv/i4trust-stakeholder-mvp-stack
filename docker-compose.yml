@@ -68,6 +68,7 @@ services:
         ports:
             - "${KEYROCK_PORT}:3000"
         environment:
+            - "DEBUG=idm:*"
             - "IDM_DB_HOST=mysql"
             - "IDM_DB_USER=root"
             - "IDM_DB_PASS=${MYSQL_ROOT_PASSWORD}"
