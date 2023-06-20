@@ -36,6 +36,7 @@ services:
         ports:
             - "${ORION_LD_PORT}:1026"
         environment:
+            - "ORIONLD_EXPERIMENTAL=TRUE"
             - "ORIONLD_MONGO_HOST=mongo-db"
             - "ORIONLD_MONGO_USER=root"
             - "ORIONLD_MONGO_PASSWORD=${MONGO_DB_ROOT_PASSWORD}"
