@@ -149,7 +149,7 @@ async function _validate_participant(req, res) {
   auth_params.append('nonce', client_payload.nonce);
 
   res.status(204).location('/oauth2/authorize?' + auth_params).end();
-  return true;
+  return false;
 }
 
 async function _token(req, res) {
