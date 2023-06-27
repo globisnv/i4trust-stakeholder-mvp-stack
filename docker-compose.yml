@@ -88,7 +88,6 @@ services:
             - "IDM_PR_CLIENT_KEY=${CLIENT_PRIVATE_KEY}"
         restart: "always"
         volumes:
-            - "./fiware-idm/controllers/extparticipant/utils.js:/opt/fiware-idm/controllers/extparticipant/extparticipant.js"
             - "./fiware-idm/controllers/extparticipant/utils.js:/opt/fiware-idm/controllers/extparticipant/utils.js"
             - "./fiware-idm/controllers/authregistry/authregistry.js:/opt/fiware-idm/controllers/authregistry/authregistry.js"
             - "./fiware-idm/routes/authregistry/authregistry.js:/opt/fiware-idm/routes/authregistry/authregistry.js"
