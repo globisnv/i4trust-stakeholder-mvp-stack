@@ -279,9 +279,7 @@ exports.validate_participant = function validate_participant(req, res, next) {
 
   _validate_participant(req, res).then(
     (skip) => {
-      if (!skip) {
         next();
-      }
     },
     (err) => {
       if (err instanceof oauth2_server.OAuthError) {
