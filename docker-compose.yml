@@ -86,12 +86,15 @@ services:
             - "IDM_PR_CLIENT_ID=${CLIENT_ID}"
             - "IDM_PR_CLIENT_CRT=${CLIENT_CERTIFICATES}"
             - "IDM_PR_CLIENT_KEY=${CLIENT_PRIVATE_KEY}"
+            - "IDM_CORS_ENABLED=true"
+            - "IDM_CORS_ENABLED=*"
         restart: "always"
         volumes:
             - "./fiware-idm/controllers/extparticipant/extparticipant.js:/opt/fiware-idm/controllers/extparticipant/extparticipant.js"
             - "./fiware-idm/controllers/extparticipant/utils.js:/opt/fiware-idm/controllers/extparticipant/utils.js"
             - "./fiware-idm/controllers/authregistry/authregistry.js:/opt/fiware-idm/controllers/authregistry/authregistry.js"
             - "./fiware-idm/routes/authregistry/authregistry.js:/opt/fiware-idm/routes/authregistry/authregistry.js"
+            - "./fiware-idm/controllers/web/sessions.js:/opt/fiware-idm/controllers/web/sessions.js"
         depends_on:
             - "mysql"
 
