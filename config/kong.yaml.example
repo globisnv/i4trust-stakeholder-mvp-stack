@@ -92,6 +92,8 @@ plugins:
     - Content-Type
     - Date
     - X-Auth-Token
+    - authorization
+    - link
     exposed_headers:
     - X-Auth-Token
     credentials: true
