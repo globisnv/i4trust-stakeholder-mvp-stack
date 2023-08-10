@@ -79,3 +79,20 @@ services:
             headers:
               - "Authorization"
               - "authorization"
+plugins:
+- name: cors
+  config:
+    origins:
+    - "*"
+    headers:
+    - Accept
+    - Accept-Version
+    - Content-Length
+    - Content-MD5
+    - Content-Type
+    - Date
+    - X-Auth-Token
+    exposed_headers:
+    - X-Auth-Token
+    credentials: true
+    max_age: 3600
